@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # FastAPI 백엔드 애플리케이션
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    restart: always
+    environment:
+      - SQLALCHEMY_DATABASE_URL=${SQLALCHEMY_DATABASE_URL}  # 사용자, 비밀번호, 데이터베이스 이름
+    networks:
+      - db_network
+
+  # MySQL 데이터베이스
+  db:
+    image: mysql:latest
+    container_name: db
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./database/mysql/env.mysql
+    volumes:
+      - './database/mysql/data:/var/lib/mysql'
+      - './database/mysql/etc:/etc/mysql/conf.d'
+    networks:
+      - db_network
+    restart: always
+
+networks:
+  db_network:
+    driver: bridge
+

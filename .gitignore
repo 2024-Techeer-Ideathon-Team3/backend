@@ -1,0 +1,6 @@
+venv/
+migrations/
+alembic.ini
+.env
+database/mysql/data/
+database/mysql/etc/
