@@ -14,14 +14,18 @@ api_key = os.getenv("OPENAI_API_KEY")
 async def gpt_api(topic):
     client = OpenAI(api_key=api_key)
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo-16k",
+        model="gpt-4o",
         messages=[
-            {"role": "system", "content": "You will be asked to enter some topic from the user."
-                                          "Recommend 4 logo design concepts that fit the topic and what the concept means as content."
-                                          "In concept, list as nouns what elements go into the design."
-                                          "In Korean."},
-            {"role": "user", "content": topic}
-        ]
+            {"role": "system", "content": "You are tasked with receiving a project concept from the user and recommending logo design concepts that fit the project."
+                                          "SPECIFICALLY Recommend 4 logo design concepts by focusing on the object and verb of the user’s input and explain what each concept means."
+                                          "List the elements that go into each design as nouns."
+                                          "Respond in Korean."
+                                          },
+                                        
+            {"role": "user", "content": f"{topic}. PLEASE RECOMMEND LOGO DESIGNS BY FOCUSING ON THE OBJECT AND VERB OF THE MY INPUT."},
+            
+        ],
+        
     )
     return completion.choices[0].message
 
