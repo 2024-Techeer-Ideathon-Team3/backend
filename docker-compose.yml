@@ -4,7 +4,7 @@ services:
   # FastAPI 백엔드 애플리케이션
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
