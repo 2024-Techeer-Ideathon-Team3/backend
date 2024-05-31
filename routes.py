@@ -92,19 +92,25 @@ async def gpt_api(topic):
     print(response_text)
     return parse_logo_designs(response_text)
 
+class LogoRequest(BaseModel):
+    explanation: str
+    elements: list[str]
+    colorCode: str
+
 @router.post("/generate_logos")
-async def dalle_api(message):
+async def dalle_api(request: LogoRequest):
     client = OpenAI(api_key=api_key)
     logo_urls = []
-    for i in range(1):
+    prompt = f"design a simple logo according to the following sentences: {request.explanation} with elements {', '.join(request.elements)} in color {request.colorCode}"
+    for i in range(4):
         url_response = client.images.generate(
             model="dall-e-3",
-            prompt=message,
+            prompt=prompt,
             n=1,
             size="1024x1024"
         )
-    # 생성된 이미지의 URL 추출
-    logo_url = str(url_response.data[0].url)  # 이미지 url 출력
-    logo_urls.append(logo_url)
+        # 생성된 이미지의 URL 추출
+        logo_url = str(url_response.data[0].url)  # 이미지 url 출력
+        logo_urls.append(logo_url)
 
     return logo_urls
