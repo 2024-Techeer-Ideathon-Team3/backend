@@ -9,7 +9,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost",
-    "http://web:3000",
+    "http://hackathon-front:3000",
 
 ]
 
