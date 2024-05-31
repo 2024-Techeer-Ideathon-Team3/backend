@@ -2,12 +2,51 @@ from dotenv import load_dotenv
 from fastapi import APIRouter
 from openai import OpenAI
 import os
+from typing import List, Optional
+from pydantic import BaseModel
+
+
 
 router = APIRouter(prefix="/api/v1")
 
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
+
+class LogoDesign(BaseModel):
+    concept: str
+    explanation: str
+    elements: List[str]
+
+def parse_logo_designs(content: str):
+    lines = content.split("\n")
+    designs = []
+    current_design = {}
+
+    for line in lines:
+        if line.startswith("1.") or line.startswith("2.") or line.startswith("3.") or line.startswith("4."):
+            if current_design:
+                # 현재 디자인을 리스트에 추가하고 새 디자인을 시작
+                designs.append(LogoDesign(**current_design))
+                current_design = {}
+            # 컨셉 추출
+            concept = line.split("**")[1]
+            current_design['concept'] = concept
+        elif "**설명**:" in line:
+            # 설명 추출
+            explanation = line.split(":")[1].strip()
+            current_design['explanation'] = explanation
+        elif "**요소**:" in line:
+            # 요소 추출
+            elements = line.split(":")[1].split(",")
+            elements = [element.strip() for element in elements]
+            current_design['elements'] = elements
+
+    # 마지막 디자인 추가
+    if current_design:
+        designs.append(LogoDesign(**current_design))
+
+    return {"designs": designs}
 
 
 @router.post("/generate_concepts")
@@ -27,7 +66,8 @@ async def gpt_api(topic):
         ],
         
     )
-    return completion.choices[0].message
+    response_text = completion.choices[0].message.content
+    return parse_logo_designs(response_text)
 
 @router.post("/generate_logos")
 async def dalle_api(message):
