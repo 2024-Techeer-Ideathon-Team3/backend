@@ -13,11 +13,8 @@ import dotenv
 import os
 
 dotenv.load_dotenv()
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
-
 # MySQL과 연결
-SQLALCHEMY_DATABASE_URL = configs.sql_alchemy_database_url
+SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
