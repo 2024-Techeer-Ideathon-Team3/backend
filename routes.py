@@ -1,19 +1,28 @@
-from fastapi import FastAPI
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
+from openai import OpenAI
 import os
-import openai
 
 router = APIRouter(prefix="/api/v1")
 
-app = FastAPI()
 
-@app.post("/generate-image")
-async def generate_image(prompt: str):
-    response = openai.Image.create(
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
+
+
+@router.post("/generate_logo")
+async def dalle_api(message):
+    client = OpenAI(api_key=api_key)
+
+    url_response = client.images.generate(
         model="dall-e-3",
-        prompt=prompt,
+        prompt=message,
         n=1,
         size="1024x1024"
     )
-    return {"image_url": response['data'][0]['url']}
+
+    # 생성된 이미지의 URL 추출
+    logo_url = str(url_response.data[0].url)  # 이미지 url 출력
+
+    return logo_url
