@@ -95,14 +95,13 @@ async def gpt_api(topic):
 class LogoRequest(BaseModel):
     explanation: str
     elements: list[str]
-    colorCode: str
 
 @router.post("/generate_logos")
 async def dalle_api(request: LogoRequest):
     client = OpenAI(api_key=api_key)
     logo_urls = []
-    prompt = f"design a simple logo according to the following sentences: {request.explanation} with elements {', '.join(request.elements)} in color {request.colorCode}"
-    for i in range(4):
+    prompt = f"design a simple logo according to the following sentences: {request.explanation} with elements {', '.join(request.elements)} "
+    for i in range(1):
         url_response = client.images.generate(
             model="dall-e-3",
             prompt=prompt,
